@@ -34,18 +34,6 @@ void instruction_call(UM_T um, Um_opcode op, uint32_t ra,
 void populate(UM_T um, uint32_t index, uint32_t word);
 
 /* Instructions */
-void      conditional_move(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      segmented_load(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      segmented_store(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      add(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      multiply(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      divide(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      nand(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      halt(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      map_segment(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      unmap_segment(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      output(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
-void      input(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
 uint32_t  load_program(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc);
 void      load_value(UM_T um, uint32_t ra, uint32_t val);
 
