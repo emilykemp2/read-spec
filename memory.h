@@ -16,6 +16,7 @@
 
 /* Pointer to a struct that contains the data structure for this module */
 typedef struct Memory_T *Memory_T;
+typedef struct Segment_T Segment_T;
 
 /* Creates/frees memory associated with a Memory_T */
 Memory_T memory_new(uint32_t length);

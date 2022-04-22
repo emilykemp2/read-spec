@@ -107,19 +107,22 @@ void um_execute(UM_T um)
 {
     assert(um != NULL);
 
-    UArray_T seg_zero = (UArray_T)Seq_get(um->mem->segments, 0);
-    assert(seg_zero != NULL);
-
-    int seg_zero_len = UArray_length(seg_zero);
+    uint32_t *seg_zero = (uint32_t *)Seq_get(um->mem->segments, 0);
+    int seg_zero_len = *seg_zero;
     int prog_counter = 0;
     uint32_t opcode, ra, rb, rc, word;
 
     /* Execute words in segment zero until there are none left */
     while (prog_counter < seg_zero_len) {
-        word = *(uint32_t *)UArray_at(seg_zero, prog_counter);
+        
+        if (seg_zero_len == prog_counter) {
+            //fprintf(stderr, "HERE\n");
+            break;
+        }
 
+        word = *(seg_zero + 1 + prog_counter);
+        //fprintf(stderr, "s0: %u, len: %u, counter: %d\n", *seg_zero, seg_zero_len, prog_counter);
         opcode = word >> OP_RIGHT_SHIFT;
-
         prog_counter++;
 
         /* Load value */
@@ -138,11 +141,10 @@ void um_execute(UM_T um)
         if (opcode == 12) {
             /* Updates programs counter*/
             prog_counter = load_program(um, ra, rb, rc);
+            seg_zero = (uint32_t *)Seq_get(um->mem->segments, 0);
+            seg_zero_len = *seg_zero;
+            //fprintf(stderr, "%u\n", seg_zero_len);
 
-            seg_zero = (UArray_T)Seq_get(um->mem->segments, 0);
-            assert(seg_zero != NULL);
-
-            seg_zero_len = UArray_length(seg_zero);
         } else {
             instruction_call(um, opcode, ra, rb, rc);
         }
@@ -409,29 +411,27 @@ uint32_t load_program(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc)
     assert(ra < NUM_REGISTERS && rb < NUM_REGISTERS && rc < NUM_REGISTERS);
 
     uint32_t rb_val = um->reg[rb];
-
     if (rb_val == 0) {
         return um->reg[rc];
     }
     
     /* Get the segment to copy */
-    UArray_T to_copy = (UArray_T)Seq_get(um->mem->segments, rb_val);
-    assert(to_copy != NULL);
+    // UArray_T to_copy = (UArray_T)Seq_get(um->mem->segments, rb_val);
+    // assert(to_copy != NULL);
+    uint32_t *to_copy = (uint32_t *)Seq_get(um->mem->segments, rb_val);
 
     /* Creating a copy with the same specifications */
-    int seg_len = UArray_length(to_copy);
-    UArray_T copy = UArray_new(seg_len, UArray_size(to_copy));
-    assert(copy != NULL);
+    int seg_len = *to_copy;
+    uint32_t *copy = malloc((seg_len + 1) * sizeof(uint32_t));
 
     /* Deep copying */
-    for (int i = 0; i < seg_len; i++){
-        *(uint32_t *)UArray_at(copy, i) = 
-        *(uint32_t *)UArray_at(to_copy, i);
+    for (int i = 0; i < seg_len + 1; i++){
+        *(copy + i) = *(to_copy + i);
     }
 
     /* Freeing segment 0 and inserting the copy */
-    UArray_T seg_zero = (UArray_T)Seq_get(um->mem->segments, 0);
-    UArray_free(&seg_zero);
+    uint32_t *seg_zero = (uint32_t *)Seq_get(um->mem->segments, 0);
+    free(seg_zero);
     Seq_put(um->mem->segments, 0, copy);
 
     return um->reg[rc];
