@@ -13,15 +13,13 @@
  *
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "um.h"
 #include "uarray.h"
-#include "seq.h"
 #include "bitpack.h"
-//#include "registers.h"
 #include "memory.h"
 
 #define WORD_SIZE 32
@@ -60,7 +58,6 @@ struct UM_T {
 UM_T um_new(uint32_t length)
 {
     UM_T um_new = malloc(sizeof(*um_new));
-    assert(um_new != NULL);
 
     for (int i = 0; i < 8; i++) {
         um_new->reg[i] = 0;
@@ -78,8 +75,6 @@ UM_T um_new(uint32_t length)
  */
 void um_free(UM_T *um)
 {
-    assert((*um) != NULL);
-
     memory_free(&(*um)->mem);
     free(*um);
 }
@@ -96,9 +91,6 @@ void um_free(UM_T *um)
  */
 void um_execute(UM_T um)
 {
-    assert(um != NULL);
-
-    //uint32_t *seg_zero = (uint32_t *)Seq_get(um->mem->segments, 0);
     uint32_t *seg_zero = *(um->mem->segments);
     int seg_zero_len = *seg_zero;
     int prog_counter = 0;
@@ -153,10 +145,6 @@ void um_execute(UM_T um)
 void instruction_call(UM_T um, Um_opcode op, uint32_t ra, 
                       uint32_t rb, uint32_t rc)
 {
-    assert(op >= 0 && op < 14);
-    assert(ra < NUM_REGISTERS && rb < NUM_REGISTERS && rc < NUM_REGISTERS);
-    assert(um != NULL);
-
     switch (op) {
         case CMOV: 
             if (um->reg[rc] != 0) {
@@ -197,7 +185,7 @@ void instruction_call(UM_T um, Um_opcode op, uint32_t ra,
             um->reg[rb] = memory_map(um->mem, um->reg[rc]);
             break;
 
-        case UNMAP:    
+        case UNMAP:  
             memory_unmap(um->mem, um->reg[rc]);
             break;
 
@@ -228,7 +216,6 @@ void instruction_call(UM_T um, Um_opcode op, uint32_t ra,
  */
 void populate(UM_T um, uint32_t index, uint32_t word)
 {
-    assert(um != NULL);
     memory_put(um->mem, 0, index, word);
 }
 
@@ -241,9 +228,7 @@ void populate(UM_T um, uint32_t index, uint32_t word)
  */
 uint32_t load_program(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc)
 {
-    assert(um != NULL);
-    assert(ra < NUM_REGISTERS && rb < NUM_REGISTERS && rc < NUM_REGISTERS);
-
+    (void)ra;
     uint32_t rb_val = um->reg[rb];
 
     if (rb_val == 0) {

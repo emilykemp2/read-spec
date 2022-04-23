@@ -34,15 +34,12 @@ int num_segments = 0;
 Memory_T memory_new(uint32_t length)
 {
         Memory_T m_new = malloc(sizeof(*m_new));
-        assert(m_new != NULL);
 
         /* Creating the segments */
         m_new->segments = malloc(sizeof(uint32_t *));
-        assert(m_new->segments != NULL);
 
         /* Creating the sequence to keep track of free segments */
         m_new->free = Seq_new(HINT);
-        assert(m_new->free != NULL);
 
         /* Creating segment zero with proper length*/
         memory_map(m_new, length);
@@ -58,8 +55,6 @@ Memory_T memory_new(uint32_t length)
  */
 void memory_free(Memory_T *m)
 {
-        assert(*m != NULL);
-
         /* Freeing the UArray_T segments */
         for (int seg_num = 0; seg_num < num_segments; ++seg_num) {
                 
@@ -111,7 +106,6 @@ void memory_put(Memory_T m, uint32_t seg, uint32_t off, uint32_t val)
  */
 uint32_t memory_get(Memory_T m, uint32_t seg, uint32_t off)
 {
-        assert(num_segments > (int)seg);
         uint32_t *queried_segment = *(m->segments + seg);
         return *(queried_segment + off + 1);
 }
@@ -127,8 +121,6 @@ uint32_t memory_get(Memory_T m, uint32_t seg, uint32_t off)
  */
 uint32_t memory_map(Memory_T m, uint32_t length)
 {
-        assert(m != NULL);
-
         uint32_t arr_length = length + 1;
         uint32_t *seg = malloc((arr_length) * sizeof(uint32_t));
         *(seg) = length;
@@ -171,14 +163,10 @@ uint32_t memory_map(Memory_T m, uint32_t length)
  */
 void memory_unmap(Memory_T m, uint32_t seg_num)
 {
-        assert(m != NULL);
-        assert(seg_num != 0);
-
         uint32_t *unmap = *(m->segments + seg_num);
         free(unmap);
 
         uint32_t *free_seg = malloc(sizeof(uint32_t));
-        assert(free_seg != NULL);
 
         *free_seg = seg_num;
         Seq_addhi(m->free, free_seg);

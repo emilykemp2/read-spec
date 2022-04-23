@@ -35,10 +35,8 @@ struct Registers_T {
 Registers_T registers_new()
 {
         Registers_T r_new = malloc(sizeof(*r_new));
-        assert(r_new != NULL);
 
         r_new->registers = UArray_new(REGISTER_LEN, sizeof(uint32_t));
-        assert(r_new->registers != NULL);
 
         /* Sets register's values to 0 */
         for (int index = 0; index < REGISTER_LEN; ++index) {
@@ -56,8 +54,6 @@ Registers_T registers_new()
  */
 void registers_free(Registers_T *r)
 {
-        assert(*r != NULL);
-
         UArray_free(&(*r)->registers);
         free(*r);
 }
@@ -72,9 +68,6 @@ void registers_free(Registers_T *r)
  */
 void registers_put(Registers_T r, uint32_t num_register, uint32_t value)
 {
-        assert(r != NULL);
-        assert(num_register < REGISTER_LEN);
-
         *(uint32_t *)UArray_at(r->registers, num_register) = value;
 }
 
@@ -88,8 +81,5 @@ void registers_put(Registers_T r, uint32_t num_register, uint32_t value)
  */
 uint32_t registers_get(Registers_T r, uint32_t num_register)
 {
-        assert(r != NULL);
-        assert(num_register < REGISTER_LEN);
-
         return *(uint32_t *)UArray_at(r->registers, num_register);
 }
