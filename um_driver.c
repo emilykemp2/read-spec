@@ -68,9 +68,10 @@ void populate_seg_zero(UM_T um, FILE *fp, uint32_t size)
     assert(um != NULL);
     assert(fp != NULL);
 
+    populate(um, 0, size);
+
     for (uint32_t index = 0; index < size; ++index) {
         uint32_t word = construct_word(fp);
-
         populate(um, index, word);
     }
 }

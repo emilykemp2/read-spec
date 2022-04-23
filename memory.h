@@ -10,9 +10,19 @@
  */
 
 #include <stdint.h>
+#include "seq.h"
 
 #ifndef MEMORY_H_
 #define MEMORY_H_
+
+/* Struct definition of a Memory_T which 
+   contains two sequences: 
+   - one holding pointers to UArray_T's representing segments
+   - one holding pointers to uint32_t's representing free segments */
+struct Memory_T {
+        uint32_t **segments;
+        Seq_T free;
+};
 
 /* Pointer to a struct that contains the data structure for this module */
 typedef struct Memory_T *Memory_T;
