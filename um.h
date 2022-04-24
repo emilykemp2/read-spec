@@ -1,4 +1,10 @@
 /*
+ * Emily Kemp (ekemp01) and Phoebe Wong (pwong05)
+ * um.c
+ * COMP40 HW7 profiling
+ * Spring 2022
+ *
+ * Adapted from HW6 UM code by: 
  * Alexander Zsikla (azsikl01)
  * Partner: Ann Marie Burke (aburke04)
  * um.h
@@ -29,8 +35,6 @@ void um_free(UM_T *um);
 
 /* Executes passed in program */
 void um_execute(UM_T um);
-void instruction_call(UM_T um, Um_opcode op, uint32_t ra, 
-              uint32_t rb, uint32_t rc);
 void populate(UM_T um, uint32_t index, uint32_t word);
 
 /* Instructions */

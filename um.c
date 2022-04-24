@@ -1,4 +1,10 @@
 /*
+ * Emily Kemp (ekemp01) and Phoebe Wong (pwong05)
+ * um.c
+ * COMP40 HW7 profiling
+ * Spring 2022
+ *
+ * Adapted from HW6 UM code by: 
  * Alexander Zsikla (azsikl01)
  * Partner: Ann Marie Burke (aburke04)
  * um.c
@@ -44,7 +50,7 @@
    - Register_T representing the registers
    - Memory_T representing segmented memory */
 struct UM_T {
-    uint32_t reg[8];
+    uint32_t reg[NUM_REGISTERS];
     Memory_T mem;
 };
 
@@ -53,13 +59,12 @@ struct UM_T {
  * Output: A newly allocated UM_T struct
  * Does: Allocates memory for a UM_T
  *       Creates a new Registers_T member and Memory_T member
- * Error: Asserts if memory is not allocated
  */
 UM_T um_new(uint32_t length)
 {
     UM_T um_new = malloc(sizeof(*um_new));
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < NUM_REGISTERS; i++) {
         um_new->reg[i] = 0;
     }
     um_new->mem = memory_new(length);
@@ -71,7 +76,6 @@ UM_T um_new(uint32_t length)
  * Input: A pointer to a UM_T struct 
  * Output: N/A 
  * Does: Frees all memory associated with the struct and its members
- * Error: Asserts if UM_T struct is NULL
  */
 void um_free(UM_T *um)
 {
@@ -86,8 +90,6 @@ void um_free(UM_T *um)
  *       there is no instruction left or until there is a halt instruction
  *       Calls instruction_call to execute all instructions except
  *       load program and load value
- * Error: Asserts if UM_T struct is NULL
- *        Asserts if segment zero is NULL at any point
  */
 void um_execute(UM_T um)
 {
@@ -122,85 +124,94 @@ void um_execute(UM_T um)
         if (opcode == 12) {
             /* Updates programs counter*/
             prog_counter = load_program(um, ra, rb, rc);
+
+            // uint32_t rb_val = um->reg[rb];
+
+            // if (rb_val == 0) {
+            //     prog_counter = um->reg[rc];
+            // } else {
+            //     /* Get the segment to copy */
+            //     uint32_t *to_copy = um->mem->segments[rb_val];
+
+            //     /* Creating a copy with the same specifications */
+            //     int seg_len = *to_copy;
+            //     uint32_t *copy = malloc((seg_len + 1) * sizeof(uint32_t));
+
+            //     /* Deep copying */
+            //     for (int i = 0; i < seg_len + 1; i++){
+            //         *(copy + i) = *(to_copy + i);
+            //     }
+
+            //     /* Freeing segment 0 and inserting the copy */
+            //     uint32_t *seg_zero = *(um->mem->segments);
+            //     free(seg_zero);
+            //     *(um->mem->segments) = copy;
+
+            //     prog_counter =  um->reg[rc];
+            // }
             seg_zero = *(um->mem->segments);
             seg_zero_len = *seg_zero;
 
         } else {
-            instruction_call(um, opcode, ra, rb, rc);
-        }
-    }
-}
 
-/* Name: instruction_call
- * Input: UM_T struct of the um
- *        opcode of instruction to be executed
- *        unint32_t's representing registers A, B, C
- * Output: N/A
- * Does: Executes opcodes 0 to 11 (cmove to input)
- * Error: Asserts if opcode is invalid
- *        Asserts if any register number is valid
- *        Asserts if UM_T sruct is NULL
- * Notes: is called by um_execute
- */
-void instruction_call(UM_T um, Um_opcode op, uint32_t ra, 
-                      uint32_t rb, uint32_t rc)
-{
-    switch (op) {
-        case CMOV: 
-            if (um->reg[rc] != 0) {
-                um->reg[ra] = um->reg[rb];
-            };  
-            break;
+            switch (opcode) {
+            case CMOV: 
+                if (um->reg[rc] != 0) {
+                    um->reg[ra] = um->reg[rb];
+                };  
+                break;
 
-        case SLOAD: 
-            um->reg[ra] = memory_get(um->mem, um->reg[rb], um->reg[rc]);   
-            break;
+            case SLOAD: 
+                um->reg[ra] = memory_get(um->mem, um->reg[rb], um->reg[rc]);   
+                break;
 
-        case SSTORE: 
-            memory_put(um->mem, um->reg[ra], um->reg[rb], um->reg[rc]);
-            break;
+            case SSTORE: 
+                memory_put(um->mem, um->reg[ra], um->reg[rb], um->reg[rc]);
+                break;
 
-        case ADD:                
-            um->reg[ra] = um->reg[rb] + um->reg[rc];
-            break;
+            case ADD:                
+                um->reg[ra] = um->reg[rb] + um->reg[rc];
+                break;
 
-        case MUL:          
-            um->reg[ra] = um->reg[rb] * um->reg[rc]; 
-            break;
+            case MUL:          
+                um->reg[ra] = um->reg[rb] * um->reg[rc]; 
+                break;
 
-        case DIV:  
-            um->reg[ra] = um->reg[rb] / um->reg[rc];
-            break;
+            case DIV:  
+                um->reg[ra] = um->reg[rb] / um->reg[rc];
+                break;
 
-        case NAND: 
-            um->reg[ra] = ~(um->reg[rb] & um->reg[rc]);
-            break;
+            case NAND: 
+                um->reg[ra] = ~(um->reg[rb] & um->reg[rc]);
+                break;
 
-        case HALT:
-            um_free(&um);
-            exit(EXIT_SUCCESS);
-            break;
+            case HALT:
+                um_free(&um);
+                exit(EXIT_SUCCESS);
+                break;
 
-        case MAP:         
-            um->reg[rb] = memory_map(um->mem, um->reg[rc]);
-            break;
+            case MAP:         
+                um->reg[rb] = memory_map(um->mem, um->reg[rc]);
+                break;
 
-        case UNMAP:  
-            memory_unmap(um->mem, um->reg[rc]);
-            break;
+            case UNMAP:  
+                memory_unmap(um->mem, um->reg[rc]);
+                break;
 
-        case OUT:  
-            putchar(um->reg[rc]);
-            break;
+            case OUT:  
+                putchar(um->reg[rc]);
+                break;
 
-        case IN:
-            um->reg[rc] = fgetc(stdin);
-            if ((int)um->reg[rc] == EOF) {
-                um->reg[rc] = ~0;
+            case IN:
+                um->reg[rc] = fgetc(stdin);
+                if ((int)um->reg[rc] == EOF) {
+                    um->reg[rc] = ~0;
+                }
+                break;
+
+            default: assert(true);
             }
-            break;
-
-        default: assert(true);
+        }
     }
 }
 
@@ -211,7 +222,6 @@ void instruction_call(UM_T um, Um_opcode op, uint32_t ra,
  *            segment zero at given offset
  * Output: N/A
  * Does: Populates segment zero at offset "index" with value "word"
- * Error: Asserts if the UM_T struct is NULL
  * Notes: called by driver to populate segment zero with all instructions
  */
 void populate(UM_T um, uint32_t index, uint32_t word)
@@ -223,8 +233,6 @@ void populate(UM_T um, uint32_t index, uint32_t word)
  * Input: UM_T struct; uint32_t's reprsenting registers A, B, C
  * Output: a uint32_t representing the index that program should start at
  * Does: copies segment[rb value] into segment zero and returns rc value
- * Error: Asserts UM_T struct is NULL
- *        Asserts if any register number is valid
  */
 uint32_t load_program(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc)
 {

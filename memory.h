@@ -1,4 +1,10 @@
 /*
+ * Emily Kemp (ekemp01) and Phoebe Wong (pwong05)
+ * um.c
+ * COMP40 HW7 profiling
+ * Spring 2022
+ *
+ * Adapted from HW6 UM code by: 
  * Alexander Zsikla (azsikl01)
  * Partner: Ann Marie Burke (aburke04)
  * memory.h

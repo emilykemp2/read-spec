@@ -1,4 +1,10 @@
 /*
+ * Emily Kemp (ekemp01) and Phoebe Wong (pwong05)
+ * um.c
+ * COMP40 HW7 profiling
+ * Spring 2022
+ *
+ * Adapted from HW6 UM code by: 
  * Alexander Zsikla (azsikl01)
  * Partner: Ann Marie Burke (aburke04)
  * um_driver.c
@@ -15,7 +21,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <stdint.h>
 #include <sys/stat.h>
 
@@ -58,8 +63,6 @@ int main(int argc, char *argv[])
  * Input: A UM_t struct, a file pointer, and a size
  * Output: N/A
  * Does: Populates segment zero with words from the file
- * Error: Asserts if UM_T struct is NULL
- *        Asserts if fp does not exist
  */
 void populate_seg_zero(UM_T um, FILE *fp, uint32_t size)
 {
@@ -76,17 +79,15 @@ void populate_seg_zero(UM_T um, FILE *fp, uint32_t size)
  * Output: a uint32_t representing a word
  * Does: grabs 8 bits in big endian order and 
  *       creates a 32 bit word which is returned
- * Error: Asserts if file pointer is NULL
  */
 uint32_t construct_word(FILE *fp)
 {
     uint32_t c = 0, word = 0;
-    int bytes = W_SIZE / CHAR_SIZE;
 
     /* Reads in a char and creates word in big endian order */
-    for (int c_loop = 0; c_loop < bytes; c_loop++) {
+    for (int c_loop = 0; c_loop < CHAR_PER_WORD; c_loop++) {
         c = getc(fp);
-        unsigned lsb = W_SIZE - (CHAR_SIZE * c_loop) - CHAR_SIZE;
+        unsigned lsb = 24 - (CHAR_SIZE * c_loop);
         word = Bitpack_newu(word, CHAR_SIZE, lsb, c);
     }
 

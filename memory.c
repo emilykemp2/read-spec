@@ -1,4 +1,10 @@
 /*
+ * Emily Kemp (ekemp01) and Phoebe Wong (pwong05)
+ * um.c
+ * COMP40 HW7 profiling
+ * Spring 2022
+ *
+ * Adapted from HW6 UM code by: 
  * Alexander Zsikla (azsikl01)
  * Partner: Ann Marie Burke (aburke04)
  * memory.c
@@ -13,7 +19,6 @@
 
 int num_segments = 0;
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "memory.h"
@@ -29,7 +34,6 @@ int num_segments = 0;
  *         segment 0, and segment 0 is initialized to be "length" long
          * Creates a Sequence of uint32_t pointers and 
            sets them to be the index of the unmapped segments
- * Error: Asserts if memory is not allocated
  */
 Memory_T memory_new(uint32_t length)
 {
@@ -51,7 +55,6 @@ Memory_T memory_new(uint32_t length)
  * Input: A pointer to a Memory_T struct 
  * Output: N/A 
  * Does: Frees all memory associated with the struct
- * Error: Asserts if struct is NULL
  */
 void memory_free(Memory_T *m)
 {
@@ -86,9 +89,6 @@ void memory_free(Memory_T *m)
  * Input: A Memory_T struct, a segment number, an offset, and a value
  * Output: N/A
  * Does: Inserts value at the specificed segment and offset
- * Error: Asserts if struct is NULL
- *        Asserts if segment is not mapped
- *        Asserts if offset is not mapped
  */
 void memory_put(Memory_T m, uint32_t seg, uint32_t off, uint32_t val)
 {
@@ -100,9 +100,6 @@ void memory_put(Memory_T m, uint32_t seg, uint32_t off, uint32_t val)
  * Input: A Memory_T struct, a segment number, and an offset
  * Output: A uint32_t which represents the value at that segment and offset
  * Does: Gets the value at the specified segment number and offset and returns
- * Error: Asserts if struct is NULL
- *        Asserts if segment is not mapped
- *        Asserts if offset is not mapped
  */
 uint32_t memory_get(Memory_T m, uint32_t seg, uint32_t off)
 {
@@ -116,8 +113,6 @@ uint32_t memory_get(Memory_T m, uint32_t seg, uint32_t off)
  * Does: Creates a segment that is "length" long 
  *       with all of the segment's values being zero and 
  *       returns index of the mapped segment
- * Error: Asserts if struct is NULL
- *        Asserts if memory for segment is not allocated
  */
 uint32_t memory_map(Memory_T m, uint32_t length)
 {
@@ -157,9 +152,6 @@ uint32_t memory_map(Memory_T m, uint32_t length)
  * Does: Unmaps a specified segment at the "seg_num" index and frees memory
  *       of the associated segment as well as adds that index back into the
  *       free segment sequence
- * Error: Asserts if struct is NULL
- *        Asserts if unmap segment 0
- *        Asserts if segment is NULL
  */
 void memory_unmap(Memory_T m, uint32_t seg_num)
 {
